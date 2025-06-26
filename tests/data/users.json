@@ -1,0 +1,14 @@
+{
+  "branchUser": {
+    "username": "sblmaker",
+    "password": "Imark@123"
+  },
+  "reviewer": {
+    "username": "sblchecker",
+    "password": "Imark@!23"
+  },
+  "bankAdmin": {
+    "username": "sbladmin",
+    "password": "Imark@!2345"
+  }
+}
