@@ -1,4 +1,8 @@
-const { test } = require("../pages/basePage");
+//npx playwright test tests/tests/cardWorkFlow.spec.js --project=Chromium --workers=1 --headed --debug
+
+//use  await page.pause();  for inspector
+
+const { test, expect } = require("../pages/basePage");
 const { Helper } = require("../utils/helper");
 const { generateTestData } = require("../utils/generateTestData");
 
@@ -6,11 +10,12 @@ test("User can login and submit multiple card entries", async ({
   page,
   loginPage,
 }) => {
-  test.setTimeout(120000);
+  test.setTimeout(200000);
   await loginPage.goto();
   await loginPage.login("muktinathi", "Imark@123");
-
   const helper = new Helper(page);
+  //store sessions
+  //await helper.storeSession("initiator");
 
   // Number of entries to submit
   const numberOfEntries = 1;
@@ -53,7 +58,23 @@ test("User can login and submit multiple card entries", async ({
     await helper.search("Search By NomineeAccNo.", "12345678901234567890");
     await page.waitForTimeout(2000);
 
-    await page.getByRole("radio", { name: "No" }).check();
+    //await page.getByRole("radio", { name: "No" }).check();
+
+    //********** */
+    await page
+      .getByRole("textbox", { name: "Document Type *" })
+      .fill("TestFile");
+    await page.waitForTimeout(1000);
+
+    //file upload
+    const path = require("path");
+    const filePath = path.resolve(__dirname, "../utils/uploadFiles/1.jpg");
+    await page.setInputFiles('input[type="file"]', filePath);
+
+    await page.getByRole("button", { name: " Preview" }).click();
+    //wait for some time to preview file
+    await page.waitForTimeout(1000);
+    await page.getByRole("button", { name: "Close" }).click();
 
     await page.waitForTimeout(1000);
     await helper.clickButton("Save Changes");
@@ -75,6 +96,8 @@ test("Approve By Approver", async ({ page, loginPage }) => {
   await loginPage.login("muktinathc", "Imark@123");
 
   const helper = new Helper(page);
+  //store sessions
+  // await helper.storeSession("reviewer");
 
   // Navigate to Card Approval page once
   await helper.menuSelection("Card Request");
@@ -83,21 +106,32 @@ test("Approve By Approver", async ({ page, loginPage }) => {
   // Wait for the page to fully load
   await page.waitForLoadState("networkidle");
 
-  // Wait for the table to be visible using role="table"
-  // await page.getByRole("table").waitFor({ state: "visible", timeout: 30000 });
-  await page.getByRole("table");
+  await page.getByRole("row", { name: "1" }).getByRole("button").nth(1).click();
+  await page.getByRole("button", { name: "Yes" }).click();
+  await page.waitForTimeout(5000);
+});
 
-  // Locate the table using role="table" and navigate to rowgroup
-  const table = page.getByRole("table");
-  const rowGroup = table.getByRole("rowgroup");
+test("Approve By Admin", async ({ page, loginPage }) => {
+  test.setTimeout(120000);
+  await loginPage.goto();
+  await loginPage.login("sbladmin", "Imark@123");
+  const helper = new Helper(page);
 
-  // Select the first tr using tag selection
-  const row = rowGroup.locator("tr").first();
+  await page.waitForTimeout(200);
+  // //store sessions
+  // await helper.storeSession("admin");
 
-  // Target the 13th td inside the first tr
-  const thirteenthTd = await row.locator("td").nth(12);
-  // await location();
-  // Select the p-button with tooltip="Approve" inside the 13th td
-  const approveButton = page.locator('p-button[tooltip="Approve"]');
-  await approveButton.click();
+  // Navigate to Card Approval page once
+  await helper.menuSelection("Card Request");
+  await helper.subMenuSelection("Pending Card(s) Approval");
+
+  // Wait for the page to fully load
+  await page.waitForLoadState("networkidle");
+
+  await page.getByRole("row", { name: "1" }).getByRole("button").nth(1).click();
+  await page.getByRole("button", { name: "Approve" }).click();
+  await page.waitForTimeout(5000);
+
+  //to get Data of 1st Row
+  //await helper.getRowData();
 });

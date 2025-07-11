@@ -37,7 +37,9 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'],
+      viewport: { width: 1530, height: 730 },
+     }
     },
 
     {
@@ -52,7 +54,7 @@ export default defineConfig({
 
     /* Test against mobile viewports. */
     // {
-    //   name: 'Mobile Chrome',
+    //   name: 'Chrome',
     //   use: { ...devices['Pixel 5'] },
     // },
     // {
@@ -65,10 +67,8 @@ export default defineConfig({
     //   name: 'Microsoft Edge',
     //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
     // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
+     
+     
   ],
 
   /* Run your local dev server before starting the tests */
